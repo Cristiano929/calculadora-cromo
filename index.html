@@ -5,121 +5,60 @@
   <title>Calculadora de Cromagem</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #121212;
-      color: #fff;
-      margin: 0;
-      padding: 20px;
-      transition: background 0.3s, color 0.3s;
+    body { 
+      font-family: Arial, sans-serif; 
+      padding: 20px; 
+      background-color: #f0f0f0; 
     }
-    .light {
-      background: #f0f0f0;
-      color: #000;
+    input, button { 
+      width: 90%; 
+      max-width: 300px; 
+      padding: 10px; 
+      margin: 10px 0; 
+      font-size: 16px; 
     }
-    header {
-      text-align: center;
-      margin-bottom: 20px;
+    button { 
+      background-color: #4CAF50; 
+      color: white; 
+      border: none; 
+      cursor: pointer; 
     }
-    input, button {
-      width: 90%;
-      max-width: 300px;
-      padding: 10px;
-      margin: 10px auto;
-      display: block;
-      border-radius: 5px;
-      border: none;
-      font-size: 16px;
+    button:hover { 
+      background-color: #45a049; 
     }
-    button {
-      background: #4CAF50;
-      color: white;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #45a049;
-    }
-    .resultado, .historico {
-      margin-top: 20px;
-      padding: 10px;
-      border-radius: 5px;
-      background: rgba(255, 255, 255, 0.1);
+    .resultado { 
+      margin-top: 20px; 
+      font-size: 18px; 
+      font-weight: bold; 
     }
   </style>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
 
-  <header>
-    <h1>Calculadora de Cromagem</h1>
-  </header>
+  <h1>Calculadora de Cromagem</h1>
 
   <input type="number" id="diametro" placeholder="Diâmetro (mm)">
   <input type="number" id="comprimento" placeholder="Comprimento (mm)">
   <input type="number" id="coeficiente" placeholder="Coeficiente (R$)">
 
   <button onclick="calcular()">Calcular</button>
-  <button onclick="exportarPDF()">Exportar PDF</button>
-  <button onclick="imprimir()">Imprimir</button>
-  <button onclick="enviarWhatsApp()">Enviar WhatsApp</button>
-  <button onclick="alternarModo()">Alternar Modo Claro/Escuro</button>
 
   <div class="resultado" id="resultado"></div>
-  <div class="historico" id="historico"><strong>Histórico:</strong></div>
 
 <script>
-  let modoClaro = false;
-  let historico = [];
+function calcular() {
+  const diametro = parseFloat(document.getElementById('diametro').value);
+  const comprimento = parseFloat(document.getElementById('comprimento').value);
+  const coeficiente = parseFloat(document.getElementById('coeficiente').value);
 
-  function calcular() {
-    const diametro = parseFloat(document.getElementById('diametro').value);
-    const comprimento = parseFloat(document.getElementById('comprimento').value);
-    const coeficiente = parseFloat(document.getElementById('coeficiente').value);
-
-    if (isNaN(diametro) || isNaN(comprimento) || isNaN(coeficiente)) {
-      document.getElementById('resultado').innerText = "Preencha todos os campos!";
-      return;
-    }
-
-    const valor = ((diametro * comprimento * 3.14) / 10000) * coeficiente;
-    const resultadoTexto = Valor a pagar: R$ ${valor.toFixed(2)};
-    document.getElementById('resultado').innerText = resultadoTexto;
-
-    historico.push(resultadoTexto);
-    atualizarHistorico();
+  if (isNaN(diametro) || isNaN(comprimento) || isNaN(coeficiente)) {
+    document.getElementById('resultado').innerText = "Por favor, preencha todos os campos corretamente.";
+    return;
   }
 
-  function atualizarHistorico() {
-    document.getElementById('historico').innerHTML = '<strong>Histórico:</strong><br>' + historico.join('<br>');
-  }
-
-  function exportarPDF() {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    const texto = document.getElementById('resultado').innerText || "Nenhum cálculo realizado.";
-    doc.text("Resultado da Cromagem:", 10, 10);
-    doc.text(texto, 10, 20);
-    doc.save("resultado_cromagem.pdf");
-  }
-
-  function imprimir() {
-    window.print();
-  }
-
-  function enviarWhatsApp() {
-    const texto = document.getElementById('resultado').innerText;
-    if (!texto) {
-      alert("Realize um cálculo primeiro!");
-      return;
-    }
-    const link = https://wa.me/?text=${encodeURIComponent(texto)};
-    window.open(link, '_blank');
-  }
-
-  function alternarModo() {
-    modoClaro = !modoClaro;
-    document.body.classList.toggle('light', modoClaro);
-  }
+  const valor = ((diametro * comprimento * 3.14) / 10000) * coeficiente;
+  document.getElementById('resultado').innerText = Valor a pagar: R$ ${valor.toFixed(2)};
+}
 </script>
 
 </body>
