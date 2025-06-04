@@ -31,6 +31,7 @@
 
   <h1>Calculadora de Cromagem</h1>
 
+  <input type="text" id="cliente" placeholder="Nome do Cliente">
   <input type="number" id="diametro" placeholder="Diâmetro (mm)">
   <input type="number" id="comprimento" placeholder="Comprimento (mm)">
   <input type="number" id="coeficiente" placeholder="Coeficiente (R$)">
@@ -48,26 +49,31 @@
   let modoClaro = false;
 
   function calcular() {
+    const cliente = document.getElementById('cliente').value.trim();
     const d = parseFloat(document.getElementById('diametro').value);
     const c = parseFloat(document.getElementById('comprimento').value);
     const k = parseFloat(document.getElementById('coeficiente').value);
 
-    if (isNaN(d) || isNaN(c) || isNaN(k)) {
+    if (!cliente || isNaN(d) || isNaN(c) || isNaN(k)) {
       document.getElementById('resultado').innerText = "Preencha todos os campos!";
       return;
     }
 
     const valor = ((d * c * 3.14) / 10000) * k;
-    document.getElementById('resultado').innerText = "Valor a pagar: R$ " + valor.toFixed(2);
+    document.getElementById('resultado').innerText = 
+      "Cliente: " + cliente + "\nValor a pagar: R$ " + valor.toFixed(2);
   }
 
   function exportarPDF() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
+    const cliente = document.getElementById('cliente').value.trim();
     const resultado = document.getElementById('resultado').innerText;
+
     doc.text("Resultado da Cromagem:", 10, 10);
-    doc.text(resultado, 10, 20);
-    doc.save("resultado.pdf");
+    doc.text("Cliente: " + cliente, 10, 20);
+    doc.text(resultado, 10, 30);
+    doc.save("resultado_" + cliente + ".pdf");
   }
 
   function imprimir() {
