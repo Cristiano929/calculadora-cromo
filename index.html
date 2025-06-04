@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Calculadora de Cromagem</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    :root {
+      --bg-color: #121212;
+      --text-color: #f0f0f0;
+      --input-bg: #2c2c2c;
+      --border-color: #333;
+      --btn-bg: #007BFF;
+      --btn-hover: #0056b3;
+    }
+    .light-mode {
+      --bg-color: #f4f4f4;
+      --text-color: #121212;
+      --input-bg: #fff;
+      --border-color: #ccc;
+      --btn-bg: #007BFF;
+      --btn-hover: #0056b3;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      padding: 20px;
+      margin: 0;
+    }
+    .container {
+      max-width: 400px;
+      margin: auto;
+      background: var(--input-bg);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 5px;
+      border: 1px solid var(--border-color);
+      background: var(--input-bg);
+      color: var(--text-color);
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      background-color: var(--btn-bg);
+      border: none;
+      color: white;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      background-color: var(--btn-hover);
+    }
+    .resultado {
+      margin-top: 20px;
+      font-size: 18px;
+      font-weight: bold;
+      text-align: center;
+    }
+    canvas {
+      margin-top: 20px;
+      width: 100%;
+    }
+    .switch-mode {
+      margin-top: 10px;
+      text-align: center;
+    }
+    @media (max-width: 500px) {
+      .container {
+        padding: 15px;
+      }
+      h1 {
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Calculadora de Cromagem</h1>
+
+  <label for="cliente">Nome do Cliente:</label>
+  <input type="text" id="cliente" placeholder="Digite o nome do cliente">
+
+  <label for="diametro">Diâmetro (mm):</label>
+  <input type="number" id="diametro" placeholder="Digite o diâmetro">
+
+  <label for="comprimento">Comprimento (mm):</label>
+  <input type="number" id="comprimento" placeholder="Digite o comprimento">
+
+  <label for="coeficiente">Coeficiente:</label>
+  <input type="number" id="coeficiente" placeholder="Digite o coeficiente" step="0.01">
+
+  <label for="moeda">Escolha a moeda:</label>
+  <select id="moeda">
+    <option value="R$">R$ - Real</option>
+    <option value="USD">$ - Dólar</option>
+    <option value="EUR">€ - Euro</option>
+  </select>
+
+  <button onclick="calcular()">Calcular</button>
+  <button onclick="exportarPDF()">Exportar em PDF</button>
+  <button onclick="window.print()">Imprimir</button>
+
+  <div class="resultado" id="resultado"></div>
+
+  <canvas id="grafico"></canvas>
+
+  <div class="switch-mode">
+    <button onclick="alternarModo()">Alternar Modo Claro/Escuro</button>
+  </div>
+</div>
+
+<script>
+  let meuGrafico;
+  let modoClaro = false;
+
+  function calcular() {
+    const cliente = document.getElementById('cliente').value.trim();
+    const diametro = parseFloat(document.getElementById('diametro').value);
+    const comprimento = parseFloat(document.getElementById('comprimento').value);
+    const coeficiente = parseFloat(document.getElementById('coeficiente').value);
+    const moeda = document.getElementById('moeda').value;
+
+    if (!cliente || isNaN(diametro) || isNaN(comprimento) || isNaN(coeficiente)) {
+      document.getElementById('resultado').textContent = 'Por favor, preencha todos os campos corretamente.';
+      return;
+    }
+
+    const valor = ((diametro * comprimento * 3.14) / 10000) * coeficiente;
+    document.getElementById('resultado').textContent = ${cliente}, o valor a pagar é: ${moeda} ${valor.toFixed(2)};
+
+    desenharGrafico(diametro, comprimento, valor);
+  }
+
+  function desenharGrafico(diametro, comprimento, valor) {
+    const ctx = document.getElementById('grafico').getContext('2d');
+
+    if (meuGrafico) {
+      meuGrafico.destroy();
+    }
+
+    meuGrafico = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Diâmetro (mm)', 'Comprimento (mm)', 'Valor'],
+        datasets: [{
+          label: 'Parâmetros',
+          data: [diametro, comprimento, valor],
+          backgroundColor: ['#007BFF', '#28A745', '#FFC107']
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false },
+          tooltip: { enabled: true }
+        },
+        scales: {
+          y: { beginAtZero: true }
+        }
+      }
+    });
+  }
+
+  function exportarPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    const cliente = document.getElementById('cliente').value.trim();
+    const diametro = document.getElementById('diametro').value;
+    const comprimento = document.getElementById('comprimento').value;
+    const coeficiente = document.getElementById('coeficiente').value;
+    const moeda = document.getElementById('moeda').value;
+    const resultado = document.getElementById('resultado').textContent;
+
+    doc.setFontSize(16);
+    doc.text('Relatório de Cromagem', 20, 20);
+    doc.setFontSize(12);
+    doc.text(Cliente: ${cliente}, 20, 40);
+    doc.text(Diâmetro: ${diametro} mm, 20, 50);
+    doc.text(Comprimento: ${comprimento} mm, 20, 60);
+    doc.text(Coeficiente: ${coeficiente}, 20, 70);
+    doc.text(Moeda: ${moeda}, 20, 80);
+    doc.text(resultado, 20, 100);
+
+    doc.save(relatorio_${cliente}.pdf);
+  }
+
+  function alternarModo() {
+    modoClaro = !modoClaro;
+    document.body.classList.toggle('light-mode', modoClaro);
+  }
+</script>
+
+</body>
+</html>
