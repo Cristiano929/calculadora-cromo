@@ -5,45 +5,53 @@
   <title>Calculadora de Cromagem</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    body { 
-      font-family: Arial, sans-serif; 
-      padding: 20px; 
-      background-color: #f0f0f0; 
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      color: #333;
+      padding: 20px;
     }
-    input, button { 
-      width: 90%; 
-      max-width: 300px; 
-      padding: 10px; 
-      margin: 10px 0; 
-      font-size: 16px; 
+    h1 {
+      text-align: center;
     }
-    button { 
-      background-color: #4CAF50; 
-      color: white; 
-      border: none; 
-      cursor: pointer; 
+    input, button {
+      width: 90%;
+      max-width: 300px;
+      padding: 10px;
+      margin: 10px auto;
+      display: block;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 16px;
     }
-    button:hover { 
-      background-color: #45a049; 
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
     }
-    .resultado { 
-      margin-top: 20px; 
-      font-size: 18px; 
-      font-weight: bold; 
+    button:hover {
+      background-color: #45a049;
+    }
+    .resultado {
+      margin-top: 20px;
+      font-size: 18px;
+      font-weight: bold;
+      text-align: center;
     }
   </style>
 </head>
 <body>
 
-  <h1>Calculadora de Cromagem</h1>
+<h1>Calculadora de Cromagem</h1>
 
-  <input type="number" id="diametro" placeholder="Diâmetro (mm)">
-  <input type="number" id="comprimento" placeholder="Comprimento (mm)">
-  <input type="number" id="coeficiente" placeholder="Coeficiente (R$)">
+<input type="number" id="diametro" placeholder="Diâmetro (mm)">
+<input type="number" id="comprimento" placeholder="Comprimento (mm)">
+<input type="number" id="coeficiente" placeholder="Coeficiente (R$)">
 
-  <button onclick="calcular()">Calcular</button>
+<button onclick="calcular()">Calcular</button>
 
-  <div class="resultado" id="resultado"></div>
+<div class="resultado" id="resultado"></div>
 
 <script>
 function calcular() {
@@ -52,15 +60,16 @@ function calcular() {
   const coeficiente = parseFloat(document.getElementById('coeficiente').value);
 
   if (isNaN(diametro) || isNaN(comprimento) || isNaN(coeficiente)) {
-    document.getElementById('resultado').innerText = "Por favor, preencha todos os campos corretamente.";
+    document.getElementById('resultado').innerText = 'Por favor, preencha todos os campos corretamente.';
     return;
   }
 
-  const valor = ((diametro * comprimento * 3.14) / 10000) * coeficiente;
-  document.getElementById('resultado').innerText = Valor a pagar: R$ ${valor.toFixed(2)};
+  const area = (diametro * comprimento * 3.14) / 10000;
+  const valorPagar = area * coeficiente;
+
+  document.getElementById('resultado').innerText = Valor a pagar: R$ ${valorPagar.toFixed(2)};
 }
 </script>
 
 </body>
 </html>
- 
